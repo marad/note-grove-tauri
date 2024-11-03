@@ -8,6 +8,8 @@ export class MatchingStrategy {
     }
 
     static fuzzy(entry: string, pattern: string): boolean {
+        entry = entry.toLowerCase();
+        pattern = pattern.toLowerCase();
         let patternIdx = 0;
         let entryIdx = 0;
         while (patternIdx < pattern.length && entryIdx < entry.length) {

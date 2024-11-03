@@ -61,13 +61,7 @@ function App() {
         onUpdateNote={(idx,content) => ctl.updateNoteContent(idx,content)}
         />
 
-        <Search
-          initialQuery={searchCtl.initialQuery}
-          results={searchCtl.searchResults}
-          visible={searchCtl.searchVisible}
-          onClose={() => searchCtl.hideSearch()}
-          onSearch={(query) => searchCtl.search(query)}
-        />
+        <Search controller={searchCtl} />
       <button onClick={() => searchCtl.startActionSearch(actions)}>Search A</button>
       <button onClick={() => searchCtl.startSearch(() => [])}>Search B</button>
     </main>

@@ -28,7 +28,7 @@ export class SearchController {
         this.searchVisible = searchVisible;
         this.setSearchVisible = setSearchVisible;
 
-        const [searchFn, setSearchFn] = useState<SearchFnBox>({fn: (q:string) => []});
+        const [searchFn, setSearchFn] = useState<SearchFnBox>({fn: (_:string) => []});
         this.searchFn = searchFn;
         this.setSearchFn = setSearchFn;
 

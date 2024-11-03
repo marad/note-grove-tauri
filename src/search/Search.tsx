@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Action } from "../core/Action";
+import { SearchController } from "./SearchController";
 
 export interface SearchState {
     selectedIndex: number,
@@ -23,17 +24,16 @@ function selectPrev(state: SearchState): SearchState {
 }
 
 interface SearchProps {
-    results: Action[],
     onClose?: () => void,
-    onSearch?: (query: string) => void,
-    visible: boolean,
-    initialQuery?: string
+    controller: SearchController
 }
 
-export function Search({ results, onClose, visible, onSearch, initialQuery }: SearchProps) {
-    const _onClose = onClose || (() => { });
-    const _onSearch = onSearch || (() => { });
-    const _initialQuery = initialQuery || "";
+export function Search({ controller, onClose }: SearchProps) {
+    const _onClose = onClose || (() => { controller.hideSearch() });
+    const _onSearch = (query: string) => { controller.search(query) };
+    const _initialQuery = controller.initialQuery;
+    const results = controller.searchResults;
+    const visible = controller.searchVisible;
 
     const [state, updateState] = useState<SearchState>({ query: _initialQuery, selectedIndex: 0 });
     const inputRef = useRef<HTMLInputElement>(null);
@@ -79,12 +79,12 @@ export function Search({ results, onClose, visible, onSearch, initialQuery }: Se
     }, [handleKeyPress]);
 
     const resultsView = results.map((act, idx) => {
-        var classes = "border-l-2 px-2 py-1";
+        var classes = "border-l-2 px-2 py-1 cursor-pointer";
         if (idx == state.selectedIndex) {
             classes += " bg-zinc-600";
         }
 
-        return <li className={classes}>
+        return <li key={idx} className={classes} data-index={idx}>
             <h3 className="">
                 {act.name}
             </h3>
@@ -96,6 +96,20 @@ export function Search({ results, onClose, visible, onSearch, initialQuery }: Se
 
     return (
         <div id="search-dialog"
+            onClick={(event) => {
+                const target = event.target as HTMLElement;
+                if (target.id == "search-dialog") { 
+                    _onClose() 
+                }
+                const LI = target.closest("li");
+                if (LI != null) {
+                    const index = LI.getAttribute("data-index");
+                    if (index) {
+                        results[parseInt(index)].action();
+                        setTimeout(_onClose, 1);
+                    }
+                }
+            }}
             className={`fixed z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4 ${visible ? '' : 'hidden'}`}>
             <div className="relative top-40 mx-auto shadow-xl rounded-md bg-zinc-700 max-w-md p-1 gap-3 flex flex-col">
                 <input
