@@ -2,16 +2,14 @@ import "./App.css";
 import { useState } from "react";
 import { Stream } from "./Stream";
 import { Note } from "./core/Note";
-import { Search, SearchController } from "./search/Search";
-
+import { Search } from "./search/Search";
+import { Action } from "./core/Action";
 
 class AppController {
   notes: Note[];
   setNotes: (notes: Note[]) => void;
   selectedIndex: number = 0;
   setSelectedIndex: (index: number) => void;
-
-  search: SearchController = new SearchController();
 
   constructor(initialNotes: Note[]) {
     const [notes, setNotes] = useState<Array<Note>>(initialNotes);
@@ -46,6 +44,20 @@ function App() {
     )
   ]);
 
+  const [searchResults, setSearchResults] = useState<Action[]>([]);
+  const [searchVisible, setSearchVisible] = useState(false);
+
+  const searchOpts = {
+    searchFn: (query: string) => {
+      return [
+        new Action("First action", "description", () => {console.log("First action")}),
+        new Action("Second action", "another description", () => {console.log("Second action")}),
+        new Action("Third", "", () => {console.log("Third action")}),
+      ].filter(action => {
+        return action.name.indexOf(query) >= 0
+      });
+    }
+  };
 
   return (
     <main className="container mx-auto">
@@ -53,8 +65,14 @@ function App() {
         notes={ctl.notes} 
         onUpdateNote={(idx,content) => ctl.updateNoteContent(idx,content)}
         />
-        <button onClick={() => ctl.search.setVisible(true)}> Przycisk</button>
-      <Search controller={ctl.search}/>
+
+        <Search
+          results={searchResults}
+          visible={searchVisible}
+          onClose={() => setSearchVisible(false)}
+          onSearch={(query) => setSearchResults(searchOpts.searchFn(query))}
+        />
+      <button onClick={() => setSearchVisible(true)}>Search</button>
     </main>
   );
 }
