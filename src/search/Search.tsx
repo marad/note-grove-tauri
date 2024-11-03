@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Action } from "../core/Action";
 
 export interface SearchState {
@@ -27,30 +27,42 @@ interface SearchProps {
     onClose?: () => void,
     onSearch?: (query: string) => void,
     visible: boolean,
+    initialQuery?: string
 }
 
-export function Search({results, onClose, visible, onSearch}: SearchProps) {
-    if (!visible) {
-        return (<span></span>);
-    }
+export function Search({ results, onClose, visible, onSearch, initialQuery }: SearchProps) {
+    const _onClose = onClose || (() => { });
+    const _onSearch = onSearch || (() => { });
+    const _initialQuery = initialQuery || "";
 
-    const _onClose = onClose || (() => {});
-    const _onSearch = onSearch || (() => {});
+    const [state, updateState] = useState<SearchState>({ query: _initialQuery, selectedIndex: 0 });
+    const inputRef = useRef<HTMLInputElement>(null);
 
-    const [state, updateState] = useState<SearchState>({query: "", selectedIndex: 0});
+    useEffect(() => {
+        // focus the input when the dialog is shown
+        if (visible && inputRef.current) {
+            inputRef.current.focus();
+        }
+        // reset the query when the dialog is hidden
+        if (!visible) {
+            updateState({ query: "", selectedIndex: 0 });
+        }
+    }, [visible]);
 
     const handleKeyPress = useCallback((event: KeyboardEvent) => {
         if (event.type == 'keydown' && event.key == "j" && event.ctrlKey) {
             updateState(selectNext(state, results));
             event.stopPropagation();
-        } 
+        }
         if (event.type == 'keydown' && event.key == "k" && event.ctrlKey) {
             updateState(selectPrev(state));
             event.stopPropagation();
         }
         if (event.type == 'keydown' && event.key == "Enter") {
-            results[state.selectedIndex].action();
+            if (state.selectedIndex >= 0 && state.selectedIndex < results.length) {
+                results[state.selectedIndex].action();
             _onClose();
+            }
             event.stopPropagation();
         }
         if (event.type == 'keydown' && event.key == "Escape") {
@@ -61,8 +73,10 @@ export function Search({results, onClose, visible, onSearch}: SearchProps) {
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeyPress);
-        return () => { document.removeEventListener('keydown', handleKeyPress); }
-    });
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [handleKeyPress]);
 
     const resultsView = results.map((act, idx) => {
         var classes = "border-l-2 px-2 py-1";
@@ -79,9 +93,10 @@ export function Search({results, onClose, visible, onSearch}: SearchProps) {
             </h4>
         </li>
     });
+
     return (
         <div id="search-dialog"
-            className="fixed z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4">
+            className={`fixed z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4 ${visible ? '' : 'hidden'}`}>
             <div className="relative top-40 mx-auto shadow-xl rounded-md bg-zinc-700 max-w-md p-1 gap-3 flex flex-col">
                 <input
                     type="text"
@@ -89,8 +104,9 @@ export function Search({results, onClose, visible, onSearch}: SearchProps) {
                     onChange={(event) => {
                         const value = event.target.value;
                         _onSearch(value);
-                        updateState({...state, query: value});
+                        updateState({ ...state, query: value });
                     }}
+                    ref={inputRef}
                     className="w-full px-3 py-2 focus:outline-none rounded-sm" />
                 <ul className="w-full px-3 py-2 flex flex-col gap-2">
                     {resultsView}

@@ -4,6 +4,7 @@ import { Stream } from "./Stream";
 import { Note } from "./core/Note";
 import { Search } from "./search/Search";
 import { Action } from "./core/Action";
+import { SearchController } from "./search/SearchController";
 
 class AppController {
   notes: Note[];
@@ -29,7 +30,6 @@ class AppController {
       }
     }))
   }
-
 }
 
 function App() {
@@ -44,20 +44,15 @@ function App() {
     )
   ]);
 
-  const [searchResults, setSearchResults] = useState<Action[]>([]);
-  const [searchVisible, setSearchVisible] = useState(false);
+  const searchCtl = new SearchController();
+  // const [searchResults, setSearchResults] = useState<Action[]>([]);
+  // const [searchVisible, setSearchVisible] = useState(false);
 
-  const searchOpts = {
-    searchFn: (query: string) => {
-      return [
-        new Action("First action", "description", () => {console.log("First action")}),
-        new Action("Second action", "another description", () => {console.log("Second action")}),
-        new Action("Third", "", () => {console.log("Third action")}),
-      ].filter(action => {
-        return action.name.indexOf(query) >= 0
-      });
-    }
-  };
+  const actions = [
+    new Action("First action", "description", () => { console.log("First action") }),
+    new Action("Second action", "another description", () => { console.log("Second action") }),
+    new Action("Third", "", () => { console.log("Third action") }),
+  ];
 
   return (
     <main className="container mx-auto">
@@ -67,12 +62,14 @@ function App() {
         />
 
         <Search
-          results={searchResults}
-          visible={searchVisible}
-          onClose={() => setSearchVisible(false)}
-          onSearch={(query) => setSearchResults(searchOpts.searchFn(query))}
+          initialQuery={searchCtl.initialQuery}
+          results={searchCtl.searchResults}
+          visible={searchCtl.searchVisible}
+          onClose={() => searchCtl.hideSearch()}
+          onSearch={(query) => searchCtl.search(query)}
         />
-      <button onClick={() => setSearchVisible(true)}>Search</button>
+      <button onClick={() => searchCtl.startActionSearch(actions)}>Search A</button>
+      <button onClick={() => searchCtl.startSearch(() => [])}>Search B</button>
     </main>
   );
 }
