@@ -62,8 +62,13 @@ function App() {
         />
 
         <Search controller={searchCtl} />
-      <button onClick={() => searchCtl.startActionSearch(actions)}>Search A</button>
-      <button onClick={() => searchCtl.startSearch(() => [])}>Search B</button>
+      <button onClick={() => searchCtl.startActionSearch(actions)}>Search actions</button>
+      <button onClick={() => searchCtl.startYestNo(
+        "Are you sure?", 
+        () => { console.log("Yes") }, 
+        () => { console.log("No") }
+      )}>Yes/No</button>
+      <button onClick={() => searchCtl.startInput("What's your age?", (age) => { console.log("Your age is", age) })}>Get input</button>
     </main>
   );
 }

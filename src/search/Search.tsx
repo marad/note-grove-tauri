@@ -111,7 +111,12 @@ export function Search({ controller, onClose }: SearchProps) {
                 }
             }}
             className={`fixed z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4 ${visible ? '' : 'hidden'}`}>
-            <div className="relative top-40 mx-auto shadow-xl rounded-md bg-zinc-700 max-w-md p-1 gap-3 flex flex-col">
+            <div className="relative top-20 mx-auto shadow-xl rounded-md bg-zinc-700 max-w-md p-1 flex flex-col">
+                {controller.prompt.length > 0 ?
+                    <h1 className="p-1 text-lg py-2">
+                        {controller.prompt}
+                    </h1> : null
+                }
                 <input
                     type="text"
                     value={state.query}
