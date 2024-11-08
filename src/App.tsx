@@ -4,6 +4,7 @@ import { Stream } from "./Stream";
 import { Note } from "./core/Note";
 import { Action } from "./core/Action";
 import { YesNoDialog } from "./search/YesNoDialog";
+import { InputDialog } from "./search/InputDialog";
 
 function App() {
   const [notes, setNotes] = useState<Array<Note>>([
@@ -20,6 +21,10 @@ function App() {
 
   // const [searchResults, setSearchResults] = useState<Action[]>([]);
   // const [searchVisible, setSearchVisible] = useState(false);
+
+  const [yesNoVisible, setYesNoVisible] = useState(false);
+  const [inputVisible, setInputVisible] = useState(false);
+
 
 
   function updateNoteContent(index: number, content: string) {
@@ -45,18 +50,22 @@ function App() {
         onUpdateNote={(idx, content) => updateNoteContent(idx, content)}
       />
 
-      <YesNoDialog 
-        prompt="Are you sure?"
-        onYes={() => console.log("Well, ok!")}
-      />
-      {/* <Search controller={searchCtl} /> */}
-      {/* <button onClick={() => searchCtl.startActionSearch(actions)}>Search actions</button>
-      <button onClick={() => searchCtl.startYestNo(
-        "Are you sure?",
-        () => { console.log("Yes") },
-        () => { console.log("No") }
-      )}>Yes/No</button>
-      <button onClick={() => searchCtl.startInput("What's your age?", (age) => { console.log("Your age is", age) })}>Get input</button> */}
+      { inputVisible ?
+        <InputDialog
+          prompt="What's your age?"
+          onAccept={(input) => console.log("Input", input)}
+          onCloseRequest={() => setInputVisible(false)}
+        /> : null}
+      
+      { yesNoVisible ?
+        <YesNoDialog
+          prompt="Are you sure?"
+          onYes={() => console.log("Well, ok!")}
+          onCloseRequest={() => setYesNoVisible(false)}
+        /> : null }
+      <button onClick={() => setYesNoVisible(true)}>Show Yes/No</button>
+      <button onClick={() => setInputVisible(true)}>Show input</button>
+      {/* <button onClick={() => searchCtl.startActionSearch(actions)}>Search actions</button> */}
     </main>
   );
 }
