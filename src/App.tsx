@@ -6,6 +6,12 @@ import { Action } from "./core/Action";
 import { YesNoDialog } from "./search/YesNoDialog";
 import { InputDialog } from "./search/InputDialog";
 
+enum Dialog {
+  None,
+  YesNo,
+  Input
+}
+
 function App() {
   const [notes, setNotes] = useState<Array<Note>>([
     new Note(
@@ -22,9 +28,7 @@ function App() {
   // const [searchResults, setSearchResults] = useState<Action[]>([]);
   // const [searchVisible, setSearchVisible] = useState(false);
 
-  const [yesNoVisible, setYesNoVisible] = useState(false);
-  const [inputVisible, setInputVisible] = useState(false);
-
+  const [selectedDialog, setSelectedDialog] = useState(Dialog.None);
 
 
   function updateNoteContent(index: number, content: string) {
@@ -50,21 +54,23 @@ function App() {
         onUpdateNote={(idx, content) => updateNoteContent(idx, content)}
       />
 
-      { inputVisible ?
+      <div id="dialog-wrapper">
+      { selectedDialog == Dialog.Input &&
         <InputDialog
           prompt="What's your age?"
           onAccept={(input) => console.log("Input", input)}
-          onCloseRequest={() => setInputVisible(false)}
-        /> : null}
+          onCloseRequest={() => setSelectedDialog(Dialog.None)}
+        />}
       
-      { yesNoVisible ?
+      { selectedDialog == Dialog.YesNo &&
         <YesNoDialog
           prompt="Are you sure?"
           onYes={() => console.log("Well, ok!")}
-          onCloseRequest={() => setYesNoVisible(false)}
-        /> : null }
-      <button onClick={() => setYesNoVisible(true)}>Show Yes/No</button>
-      <button onClick={() => setInputVisible(true)}>Show input</button>
+          onCloseRequest={() => setSelectedDialog(Dialog.None)}
+        />}
+      </div>
+      <button onClick={() => setSelectedDialog(Dialog.YesNo)}>Show Yes/No</button>
+      <button onClick={() => setSelectedDialog(Dialog.Input)}>Show input</button>
       {/* <button onClick={() => searchCtl.startActionSearch(actions)}>Search actions</button> */}
     </main>
   );
