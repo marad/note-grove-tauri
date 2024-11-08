@@ -2,9 +2,7 @@ import "./App.css";
 import { useState } from "react";
 import { Stream } from "./Stream";
 import { Note } from "./core/Note";
-import { Search } from "./search/Search";
 import { Action } from "./core/Action";
-import { SearchController } from "./search/SearchController";
 import { YesNoDialog } from "./search/YesNoDialog";
 
 function App() {
@@ -20,7 +18,6 @@ function App() {
   ]);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const searchCtl = new SearchController();
   // const [searchResults, setSearchResults] = useState<Action[]>([]);
   // const [searchVisible, setSearchVisible] = useState(false);
 
