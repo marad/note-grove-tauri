@@ -5,6 +5,7 @@ import { Note } from "./core/Note";
 import { Search } from "./search/Search";
 import { Action } from "./core/Action";
 import { SearchController } from "./search/SearchController";
+import { YesNoDialog } from "./search/YesNoDialog";
 
 function App() {
   const [notes, setNotes] = useState<Array<Note>>([
@@ -47,14 +48,18 @@ function App() {
         onUpdateNote={(idx, content) => updateNoteContent(idx, content)}
       />
 
-      <Search controller={searchCtl} />
-      <button onClick={() => searchCtl.startActionSearch(actions)}>Search actions</button>
+      <YesNoDialog 
+        prompt="Are you sure?"
+        onYes={() => console.log("Well, ok!")}
+      />
+      {/* <Search controller={searchCtl} /> */}
+      {/* <button onClick={() => searchCtl.startActionSearch(actions)}>Search actions</button>
       <button onClick={() => searchCtl.startYestNo(
         "Are you sure?",
         () => { console.log("Yes") },
         () => { console.log("No") }
       )}>Yes/No</button>
-      <button onClick={() => searchCtl.startInput("What's your age?", (age) => { console.log("Your age is", age) })}>Get input</button>
+      <button onClick={() => searchCtl.startInput("What's your age?", (age) => { console.log("Your age is", age) })}>Get input</button> */}
     </main>
   );
 }
