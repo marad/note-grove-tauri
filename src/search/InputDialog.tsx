@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Search } from "./Search";
-import { Action } from "../core/Action";
+import { createAction } from "../core/Action";
 
 interface Props {
     initialInput?: string,
@@ -22,8 +22,8 @@ export function InputDialog({
         <Search
             prompt={prompt}
             results={[
-                new Action("Accept", "", () => onAccept(input)),
-                new Action("Cancel", "", onCancel)
+                createAction("Accept", () => onAccept(input)),
+                createAction("Cancel", onCancel)
             ]}
             initialQuery={initialInput}
             onSearch={setInput}

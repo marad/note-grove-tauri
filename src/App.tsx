@@ -2,7 +2,7 @@ import "./App.css";
 import { useState } from "react";
 import { Stream } from "./Stream";
 import { Note } from "./core/Note";
-import { Action } from "./core/Action";
+import { createAction, createActionWithDesc } from "./core/Action";
 import { YesNoDialog } from "./search/YesNoDialog";
 import { InputDialog } from "./search/InputDialog";
 
@@ -42,9 +42,9 @@ function App() {
   }
 
   const actions = [
-    new Action("First action", "description", () => { console.log("First action") }),
-    new Action("Second action", "another description", () => { console.log("Second action") }),
-    new Action("Third", "", () => { console.log("Third action") }),
+    createActionWithDesc("First action", "description", () => { console.log("First action") }),
+    createActionWithDesc("Second action", "another description", () => { console.log("Second action") }),
+    createAction("Third", () => { console.log("Third action") }),
   ];
 
   return (

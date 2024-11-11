@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Action } from "../core/Action";
+import { createAction } from "../core/Action";
 import { Search } from "./Search";
 import { MatchingStrategy } from "../MatchingStrategy";
 
@@ -23,8 +23,8 @@ export function YesNoDialog({
         <Search
             prompt={prompt}
             results={[
-                new Action("Yes", "", onYes),
-                new Action("No", "", onNo)
+                createAction("Yes", onYes),
+                createAction("No", onNo)
             ].filter((action) => MatchingStrategy.fuzzy(action.name, filter))}
             initialQuery={filter}
             onSearch={setFilter}
