@@ -1,4 +1,4 @@
-import { Note } from './core/Note';
+import { Note } from './core/Root';
 import './NoteCard.css'
 
 interface NoteCardProps {
@@ -11,7 +11,7 @@ export function NoteCard({note, onUpdateContent}: NoteCardProps) {
     return (
         <div className='isolate rounded-md shadow-sm bg-zinc-700 p-2 flex flex-col text-slate-200'>
             <h1 className='text-lg'>
-                {note.name}
+                {note.id}
             </h1>
             <p>
                 <textarea

@@ -1,10 +1,12 @@
 import "./App.css";
 import { useState } from "react";
 import { Stream } from "./Stream";
-import { Note } from "./core/Note";
+import { Note, createNote, Root } from "./core/Root";
 import { createAction, createActionWithDesc } from "./core/Action";
 import { YesNoDialog } from "./search/YesNoDialog";
 import { InputDialog } from "./search/InputDialog";
+import { writeTextFile, readTextFile, readDir } from "@tauri-apps/plugin-fs";
+import { appLocalDataDir, homeDir } from "@tauri-apps/api/path";
 
 enum Dialog {
   None,
@@ -13,12 +15,15 @@ enum Dialog {
 }
 
 function App() {
+  const root = new Root("test", "red", "$home/test");
   const [notes, setNotes] = useState<Array<Note>>([
-    new Note(
+    createNote(
+      root,
       "test.note",
       "Hello World!"
     ),
-    new Note(
+    createNote(
+      root,
       "different.note",
       "That is another one"
     )
@@ -34,9 +39,9 @@ function App() {
   function updateNoteContent(index: number, content: string) {
     setNotes(notes.map((note, idx) => {
       if (idx == index) {
-        return new Note(note.name, content);
+        return {...note, content };
       } else {
-        return note
+        return note;
       }
     }))
   }
@@ -46,6 +51,25 @@ function App() {
     createActionWithDesc("Second action", "another description", () => { console.log("Second action") }),
     createAction("Third", () => { console.log("Third action") }),
   ];
+
+
+  async function testWrite() {
+    const path = await homeDir();
+    console.log(await homeDir());
+    writeTextFile(path + '/test.txt', 'hello worldzzz');
+  }
+
+  async function testRead() {
+    const listing = await readDir(await homeDir());
+    listing.forEach(async (entry) => {
+      console.log(entry.name);
+    });
+
+    const content = await readTextFile(await homeDir() + '/test.txt');
+    console.log("Content:");
+    console.log(content);
+  }
+
 
   return (
     <main className="container mx-auto">
@@ -71,6 +95,7 @@ function App() {
       </div>
       <button onClick={() => setSelectedDialog(Dialog.YesNo)}>Show Yes/No</button>
       <button onClick={() => setSelectedDialog(Dialog.Input)}>Show input</button>
+      <button onClick={() => testRead()}>FS</button>
       {/* <button onClick={() => searchCtl.startActionSearch(actions)}>Search actions</button> */}
     </main>
   );

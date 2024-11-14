@@ -1,0 +1,9 @@
+- implement note root
+    - implement open note feature
+    - implement search note name feature
+- implement config
+- figure out and implement how to use ripgrep for search (https://docs.rs/grep-searcher/0.1.14/grep_searcher/index.html)
+    - implement search content feature in root 
+- implement note listing
+- shortcuts
+- 
