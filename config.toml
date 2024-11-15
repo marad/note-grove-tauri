@@ -1,0 +1,4 @@
+[[roots]]
+name = "Test"
+path = "../test-vault"
+color = "#FFFF00FF"

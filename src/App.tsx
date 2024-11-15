@@ -1,12 +1,14 @@
 import "./App.css";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Stream } from "./Stream";
 import { Note, createNote, Root } from "./core/Root";
 import { createAction, createActionWithDesc } from "./core/Action";
 import { YesNoDialog } from "./search/YesNoDialog";
 import { InputDialog } from "./search/InputDialog";
 import { writeTextFile, readTextFile, readDir } from "@tauri-apps/plugin-fs";
-import { appLocalDataDir, homeDir } from "@tauri-apps/api/path";
+import { appLocalDataDir, homeDir, dataDir, executableDir, runtimeDir, resolve} from "@tauri-apps/api/path";
+import { data } from "autoprefixer";
+import { Config, loadConfig } from "./core/Config";
 
 enum Dialog {
   None,
@@ -14,20 +16,52 @@ enum Dialog {
   Input
 }
 
+interface AppState {
+  config: Config,
+  roots: Root[],
+  activeRootIndex: number;
+}
+
+function activeRoot(state: AppState) {
+  return state.roots[state.activeRootIndex]
+}
+
+
+function createAppState(config: Config): AppState {
+  if (config.roots.length == 0) {
+    throw "Config should contain at least one root definition.";
+  }
+  return {
+    config,
+    roots: config.roots.map((rootCfg) => new Root(rootCfg.name, rootCfg.color, rootCfg.path)),
+    activeRootIndex: 0
+  }
+}
+
 function App() {
-  const root = new Root("test", "red", "$home/test");
-  const [notes, setNotes] = useState<Array<Note>>([
-    createNote(
-      root,
-      "test.note",
-      "Hello World!"
-    ),
-    createNote(
-      root,
-      "different.note",
-      "That is another one"
-    )
-  ]);
+  const [state, setState] = useState<AppState>()
+  useEffect(() => {
+    resolve('../config.toml')
+      .then(loadConfig)
+      .then(createAppState)
+      .then(setState);
+    return () => { }
+  }, []);
+
+
+  const [notes, setNotes] = useState<Array<Note>>([]);
+  // useEffect(() => {
+
+  //   if (state != undefined) {
+  //     activeRoot(state).listNotes()
+  //       .then((listing) => listing.map((id) => activeRoot(state).openNote(id)))
+  //       .then(setNotes)
+      
+  //   }
+
+  // }, [state])
+
+
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   // const [searchResults, setSearchResults] = useState<Action[]>([]);
@@ -65,9 +99,13 @@ function App() {
       console.log(entry.name);
     });
 
-    const content = await readTextFile(await homeDir() + '/test.txt');
-    console.log("Content:");
-    console.log(content);
+    console.log(await resolve('.'));
+
+    if (state != undefined) {
+      (await activeRoot(state).listNotes()).forEach((value) => {
+        console.log(value);
+      });
+    }
   }
 
 

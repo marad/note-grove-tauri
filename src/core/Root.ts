@@ -1,5 +1,6 @@
 import { readDir, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { MatchingStrategy } from "../MatchingStrategy";
+import { resolve } from "@tauri-apps/api/path";
 
 export type NoteId = string;
 
@@ -39,13 +40,15 @@ export class Root {
     }
 
     async listNotes(filter: string = ""): Promise<NoteId[]> {
-        const listing = await readDir(this.path);
+        const dirPath = await resolve(this.path);
+        const listing = await readDir(dirPath);
         return listing.map(entry => entry.name.replace('.md$', ''))
             .filter(id => MatchingStrategy.fuzzy(id, filter));
     } 
 
     async openNote(id: NoteId): Promise<Note> {
-        const content = await readTextFile(this.idToPath(id));
+        const fullPath = await resolve(this.idToPath(id))
+        const content = await readTextFile(fullPath);
         return {
             root: this,
             id,
@@ -56,5 +59,4 @@ export class Root {
     async saveNoteContent(note: Note): Promise<void> {
         await writeTextFile(this.idToPath(note.id), note.content);
     }
-
 }
