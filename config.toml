@@ -2,3 +2,13 @@
 name = "Test"
 path = "../test-vault"
 color = "#FFFF00FF"
+
+[[roots]]
+name = "Personal"
+path = "..."
+color = "#FF55CC55"
+
+[[roots]]
+name = "Allegro"
+path = "..."
+color = "#FF0088FF"
